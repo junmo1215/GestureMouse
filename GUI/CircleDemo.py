@@ -19,7 +19,7 @@ class CircleDemo:
 
         self.canvas.bind(sequence="<Button-1>", func=self._on_mouse_l_down)
         self.canvas.bind(sequence="<ButtonRelease-1>", func=self._on_mouse_l_up)
-        self.canvas.bind(sequence="<B1-Motion>", func=self._on_mouse_l_move)
+        self.canvas.bind(sequence="<Motion>", func=self._on_mouse_l_move)
 
         self.state = {
             "mouse_down": False,
@@ -45,16 +45,19 @@ class CircleDemo:
         for key, value in new_state.items():
             self.state[key] = value
 
-        position_changed = False
-        for key in ["circle_position_x", "circle_position_y"]:
+        state_changed = False
+        for key in self.state.keys():
             if old_state[key] != self.state[key]:
-                position_changed = True
+                state_changed = True
         
-        if position_changed:
+        if state_changed:
             self._draw()
 
     def _draw(self):
-        position_x, position_y = self._get_state("circle_position_x"), self._get_state("circle_position_y")
+        if self._get_state("mouse_down"):
+            position_x, position_y = self._get_state("circle_position_x"), self._get_state("circle_position_y")
+        else:
+            position_x, position_y = self.WIDTH / 2, self.HEIGHT / 2
         x1, y1 = position_x - self.RADIUS, position_y - self.RADIUS
         x2, y2 = position_x + self.RADIUS, position_y + self.RADIUS
 
@@ -70,7 +73,7 @@ class CircleDemo:
         self.set_up()
 
     def _on_mouse_l_move(self, event):
-        print("on_mouse_l_move", event.x, event.y)
+        print("on_mouse_move", event.x, event.y)
         self.set_position(event.x, event.y)
     
     def set_down(self):
@@ -80,9 +83,8 @@ class CircleDemo:
         self._set_state({"mouse_down": False})
 
     def set_position(self, x, y):
-        if self._get_state("mouse_down"):
-            self._set_state({
-                "circle_position_x": x,
-                "circle_position_y": y
-            })
+        self._set_state({
+            "circle_position_x": x,
+            "circle_position_y": y
+        })
 
