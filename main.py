@@ -2,6 +2,8 @@
 
 import cv2
 import numpy as np
+import imutils
+from queue import Queue
 
 from GUI import CircleDemo
 from Brain import HandMouse
@@ -19,14 +21,23 @@ class Player():
         self.capture = cv2.VideoCapture(cam)
         self.brain = HandMouse(model_path)
 
+    def __del__(self):
+        self.capture.release()
+        cv2.destroyAllWindows()
+
     def play(self):
+        # self.game.show()
+        self.game.start()
         while True:
             # read hand state from camera
             ret, frame = self.capture.read()
-            # if ret
-            #     break
+            # frame = imutils.resize(frame, width=450)
+            # print(frame.shape)
+            if ret == False:
+                break
 
             x, y, is_mouse_down = self.brain.process(frame)
+            print(x, y, is_mouse_down)
 
             if is_mouse_down != self.last_mouse_is_down:
                 # trigger mouse up/down event when state change
@@ -37,10 +48,14 @@ class Player():
                 self.last_mouse_is_down = is_mouse_down
 
             self.game.set_position(x, y)
+            cv2.imshow("test", frame)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
 
 def main():
-    circle_demo = CircleDemo()
-    circle_demo.show()
+    cmd_queue = Queue()
+    circle_demo = CircleDemo(cmd_queue)
+    circle_demo.start()
 
     while True:
         cmd = input(">>> ")
@@ -60,6 +75,8 @@ def main():
             print("ex:", ex)
 
 if __name__ == "__main__":
-    main()
-    # player = Player()
-    # player.play()
+    # main()
+    player = Player()
+    player.play()
+
+    

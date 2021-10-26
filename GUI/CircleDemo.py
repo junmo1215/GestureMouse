@@ -3,16 +3,48 @@
 import tkinter as tk
 from tkinter.constants import TRUE
 
-class CircleDemo:
-    WIDTH = 300
-    HEIGHT = 300
+import threading
+
+class CircleDemo(threading.Thread):
+    WIDTH = 640
+    HEIGHT = 480
     RADIUS = 10
-    def show(self):
-        window = tk.Tk()
-        window.title = "GestureMouse"
+    def __init__(self, cmd_queue=None):
+        # self.cmd_queue = cmd_queue
+        threading.Thread.__init__(self)
+        # self.show()
+
+    # def show(self):
+    #     self.window = tk.Tk()
+    #     self.window.title = "GestureMouse"
+
+    #     self.canvas = tk.Canvas(
+    #         self.window, bg="white",
+    #         width=self.WIDTH, height=self.HEIGHT)
+    #     self.canvas.focus_set()
+    #     self.canvas.pack()
+
+    #     self.canvas.bind(sequence="<Button-1>", func=self._on_mouse_l_down)
+    #     self.canvas.bind(sequence="<ButtonRelease-1>", func=self._on_mouse_l_up)
+    #     self.canvas.bind(sequence="<Motion>", func=self._on_mouse_l_move)
+
+    #     self.state = {
+    #         "mouse_down": False,
+    #         "circle_position_x": self.WIDTH / 2,
+    #         "circle_position_y": self.HEIGHT / 2
+    #     }
+
+    #     self._draw()
+
+    def run(self):
+        self.window = tk.Tk()
+        # self.window.title = "GestureMouse"
+        self.window.wait_visibility(self.window)
+        self.window.wm_attributes('-alpha',0.5)
+        self.window.wm_title("GestureMouse")
 
         self.canvas = tk.Canvas(
-            window, bg="white",
+            self.window, bg="white",
             width=self.WIDTH, height=self.HEIGHT)
         self.canvas.focus_set()
         self.canvas.pack()
@@ -28,8 +60,10 @@ class CircleDemo:
         }
 
         self._draw()
+        self.window.mainloop()
 
-        # window.mainloop()
+        # while self.cmd_queue is not None and self.cmd_queue.empty() == False:
+        #     cmd = self.cmd_queue.get()
 
     def _get_state(self, key):
         if key not in self.state:
