@@ -9,7 +9,7 @@ from GUI import CircleDemo
 from Brain import HandMouse
 
 class Player():
-    def __init__(self, cam=0, model_path="") -> None:
+    def __init__(self, cam=0, model_path=None) -> None:
         """
         cam: camera name or index
         """
@@ -31,13 +31,15 @@ class Player():
         while True:
             # read hand state from camera
             ret, frame = self.capture.read()
+            # 水平翻转
+            frame = cv2.flip(frame, 1)
             # frame = imutils.resize(frame, width=450)
             # print(frame.shape)
             if ret == False:
                 break
 
-            x, y, is_mouse_down = self.brain.process(frame)
-            print(x, y, is_mouse_down)
+            ret, x, y, is_mouse_down = self.brain.process(frame)
+            print(ret, x, y, is_mouse_down)
 
             if is_mouse_down != self.last_mouse_is_down:
                 # trigger mouse up/down event when state change
@@ -48,7 +50,7 @@ class Player():
                 self.last_mouse_is_down = is_mouse_down
 
             self.game.set_position(x, y)
-            cv2.imshow("test", frame)
+            cv2.imshow("camera", frame)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 

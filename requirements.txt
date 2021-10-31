@@ -1,1 +1,4 @@
 mediapipe
+imutils
+numpy
+sklearn
