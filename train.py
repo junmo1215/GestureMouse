@@ -63,5 +63,38 @@ def train():
     print("done")
     cv2.destroyAllWindows()
 
+def test():
+    data, labels = load_datas()
+    (x_train, x_test, y_train, y_test) = train_test_split(data, labels, test_size=0.2, random_state=0)
+
+    print(x_train.shape, y_train.shape)
+    print(x_test.shape, y_test.shape)
+
+    print(y_test.shape)
+    lb = LabelBinarizer().fit(y_train)
+    one_hot = OneHotEncoder()
+    y_train = one_hot.fit_transform(lb.transform(y_train)).toarray()
+    y_test = one_hot.fit_transform(lb.transform(y_test)).toarray()
+
+    # print(y_test)
+    print(y_test.shape)
+
+    handClassifier = HandMouseClassifier("./SavedModels/1.h5")
+    y_predict = handClassifier.predict(x_test)
+    i = 0
+    for i in range(len(y_predict)):
+        print(y_predict[i], y_test[i])
+        if (y_predict[i][0] - y_predict[i][1]) * (y_test[i][0] - y_test[i][1]) > 0:
+            i += 1
+    print(i, i / len(y_test))
+
+def show_train_history():
+    import json
+    with open("history.json", "r", encoding="utf-8") as hist_f:
+        history = json.load(hist_f)
+        print(history)
+
 if __name__ == "__main__":
-    train()
+    # train()
+    # test()
+    show_train_history()

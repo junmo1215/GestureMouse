@@ -5,8 +5,8 @@ import tensorflow as tf
 import json
 
 class HandMouseClassifier:
-    CLASS_MOUSE_UP = [1, 0]
-    CLASS_MOUSE_DOWN = [0, 1]
+    CLASS_MOUSE_DOWN = [1, 0]
+    CLASS_MOUSE_UP = [0, 1]
     IMAGE_SIZE = 48
 
     def __init__(self, model_path=None) -> None:
@@ -28,8 +28,15 @@ class HandMouseClassifier:
 
 
 
-    def predict(self, img):
-        pass
+    def predict(self, imgs):
+        pred = self.model.predict(imgs)
+        result = []
+        for item in pred:
+            if item[0] > item[1]:
+                result.append(HandMouseClassifier.CLASS_MOUSE_DOWN)
+            else:
+                result.append(HandMouseClassifier.CLASS_MOUSE_UP)
+        return result
 
     def _build_model(self):
         model = tf.keras.Sequential()
